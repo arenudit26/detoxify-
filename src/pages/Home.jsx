@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import { API_BASE } from "../api"; // adjust path if you put api.js elsewhere
-
-const API_BASE = "https://detoxify-backend.onrender.com"
 
 export default function FilterBar({ initial = "gaming" }) {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -10,7 +7,7 @@ export default function FilterBar({ initial = "gaming" }) {
   const navigate = useNavigate();
   
   useEffect(() => {
-    fetch(`${API_BASE}/auth/status`, {
+    fetch(`https://detoxify-backend.onrender.com/auth/status`, {
       credentials: "include"
     })
       .then(res => {
@@ -23,11 +20,11 @@ export default function FilterBar({ initial = "gaming" }) {
   
   const handleLogin = () => {
     // go to backend OAuth start route
-    window.location.href = `${API_BASE}/auth/google`;
+    window.location.href = `https://detoxify-backend.onrender.com/auth/google`;
   };
   
   const handleLogout = () => {
-    fetch(`${API_BASE}/auth/logout`, {
+    fetch(`https://detoxify-backend.onrender.com/auth/logout`, {
       method: "POST",
       credentials: "include"
     })
