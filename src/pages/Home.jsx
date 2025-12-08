@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { API_BASE } from "../api"; // adjust path if you put api.js elsewhere
+// import { API_BASE } from "../api"; // adjust path if you put api.js elsewhere
+
+const API_BASE = "https://detoxify-backend.onrender.com"
 
 export default function FilterBar({ initial = "gaming" }) {
   const [loggedIn, setLoggedIn] = useState(false);

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { API_BASE } from "../api"; // adjust path if needed
+// import { API_BASE } from "../api"; // adjust path if needed
 
 export default function Feed() {
   const [searchParams] = useSearchParams();
@@ -10,7 +10,7 @@ export default function Feed() {
   const navigate = useNavigate();
 
 
-  
+  const API_BASE = "https://detoxify-backend.onrender.com" ;
   
 
   useEffect(() => {
