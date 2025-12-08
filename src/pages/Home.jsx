@@ -19,8 +19,7 @@ export default function FilterBar({ initial = "gaming" }) {
   }, []);
   
   const handleLogin = () => {
-    // go to backend OAuth start route
-    window.location.href = `https://detoxify-backend.onrender.com/auth/google`;
+    window.location.href = "https://detoxify-backend.onrender.com/auth/google"
   };
   
   const handleLogout = () => {
