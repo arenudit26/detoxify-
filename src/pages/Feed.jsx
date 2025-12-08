@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { API_BASE } from "../api"; // adjust path if needed
 
 export default function Feed() {
   const [searchParams] = useSearchParams();
@@ -16,7 +17,7 @@ export default function Feed() {
 
     (async () => {
       try {
-        const url = `http://localhost:5000/feed?category=${encodeURIComponent(category)}`;
+        const url = `${API_BASE}/feed?category=${encodeURIComponent(category)}`;
         console.log("CLIENT: about to fetch ->", url);
         const res = await fetch(url, {
           method: "GET",

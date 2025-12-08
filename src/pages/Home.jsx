@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE } from "../api"; // adjust path if you put api.js elsewhere
 
 export default function FilterBar({ initial = "gaming" }) {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -7,19 +8,29 @@ export default function FilterBar({ initial = "gaming" }) {
   const navigate = useNavigate();
   
   useEffect(() => {
-    fetch("/auth/status")
-      .then(res => res.json())
-      .then(data => setLoggedIn(data.loggedIn))
+    fetch(`${API_BASE}/auth/status`, {
+      credentials: "include"
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("not ok");
+        return res.json();
+      })
+      .then(data => setLoggedIn(Boolean(data.loggedIn)))
       .catch(() => setLoggedIn(false));
   }, []);
   
   const handleLogin = () => {
-    window.location.href = "http://localhost:5000/auth/google";
+    // go to backend OAuth start route
+    window.location.href = `${API_BASE}/auth/google`;
   };
   
   const handleLogout = () => {
-    fetch("/auth/logout")
-      .then(() => setLoggedIn(false));
+    fetch(`${API_BASE}/auth/logout`, {
+      method: "POST",
+      credentials: "include"
+    })
+      .then(() => setLoggedIn(false))
+      .catch(() => setLoggedIn(false));
   };
   
   const handleFilter = () => {
