@@ -10,7 +10,7 @@ export default function FilterBar({ initial = "gaming" }) {
 
   
   useEffect(() => {
-    fetch(`${BACKEND}/auth/status`, {
+    fetch(`${BACKEND}/auth/google`, {
       credentials: "include"
     })
       .then(res => {
