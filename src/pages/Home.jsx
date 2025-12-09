@@ -5,9 +5,11 @@ export default function FilterBar({ initial = "gaming" }) {
   const [loggedIn, setLoggedIn] = useState(false);
   const [category, setCategory] = useState(initial);
   const navigate = useNavigate();
+
+     const BACKEND = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
   
   useEffect(() => {
-    fetch(`https://detoxify-backend.onrender.com/auth/status`, {
+    fetch(`${BACKEND}/auth/status`, {
       credentials: "include"
     })
       .then(res => {
@@ -19,11 +21,13 @@ export default function FilterBar({ initial = "gaming" }) {
   }, []);
   
   const handleLogin = () => {
-    window.location.href = "https://detoxify-backend.onrender.com/auth/google"
+    const loginUrl = `${BACKEND}/auth/google`;
+console.log("CLIENT: redirecting to login url:", loginUrl);
+  window.location.href = loginUrl;
   };
   
   const handleLogout = () => {
-    fetch(`https://detoxify-backend.onrender.com/auth/logout`, {
+    fetch(`${BACKEND}/auth/logout`, {
       method: "POST",
       credentials: "include"
     })
