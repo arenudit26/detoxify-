@@ -6,7 +6,8 @@ export default function FilterBar({ initial = "gaming" }) {
   const [category, setCategory] = useState(initial);
   const navigate = useNavigate();
 
-     const BACKEND = process.env.VITE_BACKEND_URL || "http://localhost:5000";
+  const BACKEND = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+
   
   useEffect(() => {
     fetch(`${BACKEND}/auth/status`, {
