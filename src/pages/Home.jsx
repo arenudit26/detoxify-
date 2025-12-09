@@ -8,6 +8,9 @@ export default function FilterBar({ initial = "gaming" }) {
 
   const BACKEND = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
+  console.log("CLIENT BUILD BACKEND VAR:", import.meta.env.VITE_BACKEND_URL || "http://localhost:5000");
+window.__BACKEND_DEBUG = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+
   
   useEffect(() => {
     fetch(`${BACKEND}/auth/google`, {
