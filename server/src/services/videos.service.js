@@ -1,56 +1,60 @@
-import { google } from "googleapis";
-import oauth2Client from "../config/googleClient.js";
+import axios from "axios";
 
-export const fetchVideos = async (tokens, mappings) => {
-  oauth2Client.setCredentials(tokens);
-  const youtube = google.youtube({ version: "v3", auth: oauth2Client });
-  const allVideos = [];
+const YT_BASE = "https://www.googleapis.com/youtube/v3";
+const API_KEY = process.env.YOUTUBE_API_KEY;
 
-  for (const m of mappings) {
-    const resp = await youtube.playlistItems.list({
-      part: "snippet,contentDetails",
-      playlistId: m.uploadsId,
-      maxResults: 50
-    });
-
-    const videoIds = (resp.data.items || []).map(v => v.contentDetails.videoId);
-    if (videoIds.length === 0) continue;
-
-    const videoDetails = await youtube.videos.list({
-      part: "snippet,statistics",
-      id: videoIds.join(',')
-    });
-
-    // Get unique channel IDs
-    const channelIds = [...new Set(videoDetails.data.items.map(v => v.snippet.channelId))];
-    
-    // Fetch channel profile pictures
-    const channelDetails = await youtube.channels.list({
+export const fetchVideos = async (category) => {
+  const searchRes = await axios.get(`${YT_BASE}/search`, {
+    params: {
       part: "snippet",
-      id: channelIds.join(',')
-    });
+      q: category,
+      type: "video",
+      order: "viewCount",
+      videoDuration: "medium",
+      maxResults: 50,
+      key: API_KEY,
+    },
+  });
 
-    // Map channelId -> profile picture URL
-    const channelAvatars = {};
-    (channelDetails.data.items || []).forEach(ch => {
-      channelAvatars[ch.id] = ch.snippet.thumbnails.default.url;
-    });
+  const videoIds = searchRes.data.items
+    .map(i => i.id.videoId)
+    .filter(Boolean)
+    .join(",");
 
-    const vids = (videoDetails.data.items || []).map(v => ({
-      id: v.id,
-      title: v.snippet.title,
-      description: v.snippet.description,
-      channelId: v.snippet.channelId,
-      channelTitle: v.snippet.channelTitle,
-      thumbnails: v.snippet.thumbnails,
-      publishedAt: v.snippet.publishedAt,
-      viewCount: parseInt(v.statistics.viewCount || 0),
-      channelThumbnail: channelAvatars[v.snippet.channelId] || null
-    }));
+  if (!videoIds) return [];
 
-    allVideos.push(...vids);
-    console.log('allVideos.length', allVideos?.length);
-  }
+  const videoRes = await axios.get(`${YT_BASE}/videos`, {
+    params: {
+      part: "snippet,statistics",
+      id: videoIds,
+      key: API_KEY,
+    },
+  });
 
-  return allVideos;
+  const channelIds = [
+    ...new Set(videoRes.data.items.map(v => v.snippet.channelId)),
+  ].join(",");
+
+  const channelRes = await axios.get(`${YT_BASE}/channels`, {
+    params: {
+      part: "snippet",
+      id: channelIds,
+      key: API_KEY,
+    },
+  });
+
+  const avatarMap = {};
+  channelRes.data.items.forEach(c => {
+    avatarMap[c.id] = c.snippet.thumbnails?.default?.url || null;
+  });
+
+  return videoRes.data.items.map(v => ({
+    id: v.id,
+    title: v.snippet.title,
+    description: v.snippet.description,
+    publishedAt: v.snippet.publishedAt,
+    channelTitle: v.snippet.channelTitle,
+    viewCount: Number(v.statistics.viewCount || 0),
+    channelThumbnail: avatarMap[v.snippet.channelId],
+  }));
 };
